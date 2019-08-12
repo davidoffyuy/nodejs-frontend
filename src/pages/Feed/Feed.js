@@ -18,10 +18,12 @@ class Feed extends Component {
     status: '',
     postPage: 1,
     postsLoading: true,
-    editLoading: false
+    editLoading: false,
+    firstLoad: true
   };
 
   componentDidMount() {
+    console.log('didmount feed');
     fetch('')
       .then(res => {
         if (res.status !== 200) {
@@ -34,10 +36,18 @@ class Feed extends Component {
       })
       .catch(this.catchError);
 
-    this.loadPosts();
+    // this.loadPosts();
+  }
+
+  componentDidUpdate() {
+    if (this.state.firstLoad) {
+      this.loadPosts();
+      this.setState({firstLoad: false});
+    }
   }
 
   loadPosts = direction => {
+    console.log(this.props.token);
     if (direction) {
       this.setState({ postsLoading: true, posts: [] });
     }
@@ -50,7 +60,11 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch('http://localhost:8080/feed/posts?page=' + page)
+    fetch('http://localhost:8080/feed/posts?page=' + page, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
       .then(res => {
         if (res.status !== 200) {
           throw new Error('Failed to fetch posts.');
