@@ -20,17 +20,20 @@ class Feed extends Component {
     postPage: 1,
     postsLoading: true,
     editLoading: false,
-    firstLoad: true
   };
 
   componentDidMount() {
-    console.log('Feed mount');
-    if (this.state.firstLoad && this.props.token) {
+    if (this.props.token) {
       this.loadStatus();
       this.loadPosts();
       this.setState({firstLoad: false});
     }
     const socket = openSocket('http://localhost:8080');
+    socket.on('post', data => {
+      if (data.action === 'create') {
+        this.addPost(data.post);
+      }
+    })
   }
 
   componentDidUpdate() {
@@ -204,8 +207,6 @@ class Feed extends Component {
               p => p._id === prevState.editPost._id
             );
             updatedPosts[postIndex] = post;
-          } else if (prevState.posts.length < 2) {
-            updatedPosts = prevState.posts.concat(post);
           }
           return {
             posts: updatedPosts,
