@@ -23,16 +23,21 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-
-    // this.loadPosts();
-  }
-
-  componentDidUpdate() {
-    if (this.state.firstLoad) {
+    console.log('Feed mount');
+    if (this.state.firstLoad && this.props.token) {
       this.loadStatus();
       this.loadPosts();
       this.setState({firstLoad: false});
     }
+  }
+
+  componentDidUpdate() {
+    console.log('Feed update');
+    // if (this.state.firstLoad && this.props.token) {
+    //   this.loadStatus();
+    //   this.loadPosts();
+    //   this.setState({firstLoad: false});
+    // }
   }
 
   loadStatus = () => {
