@@ -33,6 +33,9 @@ class Feed extends Component {
       if (data.action === 'create') {
         this.addPost(data.post);
       }
+      if (data.action === 'edit') {
+        this.editPost(data.post);
+      }
     })
   }
 
@@ -118,6 +121,19 @@ class Feed extends Component {
     });    
   }
 
+  editPost = post => {
+    this.setState(prevState => {
+      const updatedPosts = [...prevState.posts];
+      const updatedPostIndex = updatedPosts.findIndex(p => p._id === post._id);
+      if (updatedPostIndex > -1) {
+        updatedPosts[updatedPostIndex] = post;
+      }
+      return {
+        posts: updatedPosts
+      };
+    });
+  };
+
   statusUpdateHandler = event => {
     event.preventDefault();
     fetch('http://localhost:8080/status', {
@@ -190,30 +206,20 @@ class Feed extends Component {
         return res.json();
       })
       .then(resData => {
-        const post = {
-          _id: resData.post._id,
-          title: resData.post.title,
-          content: resData.post.content,
-          creator: resData.post.creator,
-          imageUrl: resData.post.imageUrl,
-          imagePath: resData.post.imageUrl,
-          createdAt: resData.post.createdAt,
-          updatedAt: resData.post.updatedAt
-        };
-        this.setState(prevState => {
-          let updatedPosts = [...prevState.posts];
-          if (prevState.editPost) {
-            const postIndex = prevState.posts.findIndex(
-              p => p._id === prevState.editPost._id
-            );
-            updatedPosts[postIndex] = post;
-          }
-          return {
-            posts: updatedPosts,
-            isEditing: false,
-            editPost: null,
-            editLoading: false
-          };
+        // const post = {
+        //   _id: resData.post._id,
+        //   title: resData.post.title,
+        //   content: resData.post.content,
+        //   creator: resData.post.creator,
+        //   imageUrl: resData.post.imageUrl,
+        //   imagePath: resData.post.imageUrl,
+        //   createdAt: resData.post.createdAt,
+        //   updatedAt: resData.post.updatedAt
+        // };
+        this.setState({
+          isEditing: false,
+          editPost: null,
+          editLoading: false
         });
       })
       .catch(err => {
